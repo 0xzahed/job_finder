@@ -1,37 +1,130 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# QuickHire - Mini Job Board
 
-## Getting Started
+QuickHire is a mini job board app built with **Next.js** (App Router) and a SQLite-backed API.
 
-First, run the development server:
+It includes:
+- Public landing page (QuickHire design-inspired UI)
+- Jobs listing page with search/filter
+- Job details page
+- Apply form
+- Basic admin page to create/delete jobs
+- REST API endpoints for jobs and applications
+
+## Tech Stack
+
+- Next.js 16 (React 19)
+- Tailwind CSS 4
+- Node.js built-in `node:sqlite` (SQLite)
+
+## Project Structure
+
+```text
+src/
+  app/
+    page.jsx                 # Landing page
+    jobs/page.jsx            # Job listing/search/filter
+    jobs/[id]/page.jsx       # Job detail + apply form
+    admin/page.jsx           # Admin create/delete jobs
+    api/jobs/route.js        # GET, POST jobs
+    api/jobs/[id]/route.js   # GET, DELETE single job
+    api/applications/route.js# POST application
+  components/
+    jobs/
+      JobCard.jsx
+      JobFilters.jsx
+      ApplyForm.jsx
+      AdminJobForm.jsx
+      AdminJobsTable.jsx
+  lib/
+    db.js                    # DB schema + CRUD helpers + seed
+    validation.js            # Input validation
+    formatters.js            # UI formatting helpers
+```
+
+## Setup
+
+### 1) Install dependencies
+
+```bash
+npm install
+```
+
+### 2) Run development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open: `http://localhost:3000`
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Environment Variables (Optional)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create `.env.local` if you want a custom DB path:
 
-## Learn More
+```bash
+DATABASE_PATH=./data/quickhire.db
+```
 
-To learn more about Next.js, take a look at the following resources:
+If not set, app uses `data/quickhire.db` by default.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## API Endpoints
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Jobs
 
-## Deploy on Vercel
+- `GET /api/jobs`
+  - Optional query params: `q`, `category`, `location`
+- `GET /api/jobs/{id}`
+- `POST /api/jobs`
+  - Required body:
+    - `title`
+    - `company`
+    - `location`
+    - `category`
+    - `description`
+- `DELETE /api/jobs/{id}`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Applications
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# job_finder
+- `POST /api/applications`
+  - Required body:
+    - `job_id`
+    - `name`
+    - `email`
+    - `resume_link`
+    - `cover_note`
+
+## Validation Rules
+
+- Required fields are validated for all create endpoints.
+- Email must match valid email format.
+- Resume link must be a valid HTTP/HTTPS URL.
+- Job description must be at least 20 characters.
+
+## Admin Flow
+
+Go to: `http://localhost:3000/admin`
+
+- Create a job
+- See all jobs
+- Delete any job
+
+## Candidate Flow
+
+1. Browse jobs at `/jobs`
+2. Search/filter listings
+3. Open details page `/jobs/{id}`
+4. Submit application form
+
+## Scripts
+
+```bash
+npm run dev
+npm run lint
+npm run build
+npm run start
+```
+
+## Notes
+
+- Initial sample jobs are seeded automatically on first run.
+- SQLite `node:sqlite` is currently experimental in Node, but works for this assessment setup.
